@@ -378,6 +378,57 @@ resultados = ejecutar_consulta_oracle(conn_oracle, "SELECT * FROM tabla WHERE co
 cerrar_conexion_oracle(conn_oracle)
 ```
 
+```markdown
+## Uso
+
+### Importación de Funciones y Clases
+
+Puedes importar funciones y clases desde el paquete `data_processing` de la siguiente manera:
+
+```python
+from data_processing import (
+    cargar_datos,
+    eliminar_nulos,
+    construir_modelo,
+    compilar_modelo,
+    entrenar_modelo,
+    evaluar_modelo
+)
+```
+
+### Ejemplo Completo
+
+```python
+from data_processing import (
+    cargar_datos,
+    eliminar_nulos,
+    construir_modelo,
+    compilar_modelo,
+    entrenar_modelo,
+    evaluar_modelo,
+    preprocesar_datos
+)
+
+# Cargar y preprocesar datos
+df = cargar_datos('datos.csv')
+df = eliminar_nulos(df)
+
+# Preprocesar datos para redes neuronales
+X = df.drop('target', axis=1)
+y = df['target']
+X_train, X_test, y_train, y_test = preprocesar_datos(X, y)
+
+# Construir y compilar el modelo
+model = construir_modelo(input_dim=X_train.shape[1], output_dim=len(y.unique()))
+model = compilar_modelo(model)
+
+# Entrenar el modelo
+history = entrenar_modelo(model, X_train, y_train)
+
+# Evaluar el modelo
+loss, accuracy = evaluar_modelo(model, X_test, y_test)
+```
+
 ## Contribuciones
 
 Las contribuciones son bienvenidas. Por favor, abre un issue o envía un pull request para cualquier mejora o corrección.
@@ -385,3 +436,4 @@ Las contribuciones son bienvenidas. Por favor, abre un issue o envía un pull re
 ## Licencia
 
 Este proyecto está bajo la licencia MIT. Consulta el archivo `LICENSE` para más detalles.
+```
