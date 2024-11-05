@@ -4,14 +4,14 @@ import matplotlib.pyplot as plt
 import sklearn as sk
 import seaborn as sns
 import sqlite3
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder
-from sklearn.feature_selection import SelectKBest, f_classif
-from scipy.stats import boxcox
-from imblearn.over_sampling import SMOTE
 import mysql.connector
 import pyodbc
 import psycopg2
 import cx_Oracle
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+from sklearn.feature_selection import SelectKBest, f_classif
+from scipy.stats import boxcox
+from imblearn.over_sampling import SMOTE
 
 # cargar datos csv
 def cargar_datos(ruta_archivo, tipo="csv"):
