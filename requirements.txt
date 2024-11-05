@@ -1,0 +1,13 @@
+tensorflow
+transformers
+scikit-learn
+matplotlib
+numpy
+pandas
+seaborn
+imbalanced-learn
+scipy
+mysql-connector-python
+pyodbc
+psycopg2-binary
+cx_Oracle
