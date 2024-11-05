@@ -410,7 +410,8 @@ from data_processing import (
 )
 
 
-```
+
+```bash
 pip install -r requirements.txt
 ```
 
