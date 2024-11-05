@@ -378,7 +378,7 @@ resultados = ejecutar_consulta_oracle(conn_oracle, "SELECT * FROM tabla WHERE co
 cerrar_conexion_oracle(conn_oracle)
 ```
 
-```markdown
+
 ## Uso
 
 ### Importación de Funciones y Clases
