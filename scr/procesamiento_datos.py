@@ -622,3 +622,62 @@ def ejecutar_consulta_oracle(conn, query):
 def cerrar_conexion_oracle(conn):
     conn.close()
     print("Conexión Oracle cerrada")
+
+#Ensamblar modelos 
+def ensamblar_modelos(modelos, X_train, y_train, X_test, y_test, voting='hard', weights=None, metricas=None):
+    """
+    Ensamble de modelos utilizando VotingClassifier o VotingRegressor.
+
+    Parámetros:
+    - modelos: Lista de tuplas (nombre, modelo) para ensamblar.
+    - X_train, y_train: Datos de entrenamiento.
+    - X_test, y_test: Datos de prueba.
+    - voting: Tipo de votación ('hard' o 'soft').
+    - weights: Ponderaciones para cada modelo en el ensamble.
+    - metricas: Lista de métricas a calcular (por defecto: ['accuracy', 'precision', 'recall', 'f1', 'roc_auc']).
+
+    Retorna:
+    - ensemble: Modelo ensamblado entrenado.
+    - metricas_resultados: Diccionario con los resultados de las métricas.
+    """
+    
+    # Determinar si es un problema de clasificación o regresión
+    if isinstance(y_train[0], (int, float)):
+        ensemble = VotingRegressor(estimators=modelos, weights=weights)
+    else:
+        ensemble = VotingClassifier(estimators=modelos, voting=voting, weights=weights)
+    
+    # Entrenar el modelo ensamblado
+    ensemble.fit(X_train, y_train)
+    
+    # Predecir en los datos de prueba
+    y_pred = ensemble.predict(X_test)
+    
+    # Calcular métricas
+    if metricas is None:
+        metricas = ['accuracy', 'precision', 'recall', 'f1', 'roc_auc']
+    
+    metricas_resultados = {}
+    
+    for metrica in metricas:
+        if metrica == 'accuracy':
+            metricas_resultados[metrica] = accuracy_score(y_test, y_pred)
+        elif metrica == 'precision':
+            metricas_resultados[metrica] = precision_score(y_test, y_pred, average='weighted')
+        elif metrica == 'recall':
+            metricas_resultados[metrica] = recall_score(y_test, y_pred, average='weighted')
+        elif metrica == 'f1':
+            metricas_resultados[metrica] = f1_score(y_test, y_pred, average='weighted')
+        elif metrica == 'roc_auc':
+            if voting == 'soft' and len(np.unique(y_test)) == 2:
+                y_prob = ensemble.predict_proba(X_test)[:, 1]
+                metricas_resultados[metrica] = roc_auc_score(y_test, y_prob)
+            else:
+                metricas_resultados[metrica] = 'No aplicable'
+    
+    # Imprimir resultados
+    print(f"Precisión del ensamble: {metricas_resultados['accuracy']}")
+    for metrica, resultado in metricas_resultados.items():
+        print(f"{metrica.capitalize()}: {resultado}")
+    
+    return ensemble, metricas_resultados

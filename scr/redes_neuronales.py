@@ -5,6 +5,7 @@ from tensorflow.keras.optimizers import Adam, SGD
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 import matplotlib.pyplot as plt
@@ -166,3 +167,82 @@ def callbacks(monitor='val_loss', patience=10, save_best_only=True, save_path='b
     early_stopping = EarlyStopping(monitor=monitor, patience=patience)
     model_checkpoint = ModelCheckpoint(save_path, monitor=monitor, save_best_only=save_best_only)
     return [early_stopping, model_checkpoint]
+
+#manejo de imagenes 
+
+def cargar_imagenes(ruta_directorio, target_size=(150, 150), batch_size=32, class_mode='binary'):
+    datagen = ImageDataGenerator(rescale=1./255)
+    generator = datagen.flow_from_directory(
+        ruta_directorio,
+        target_size=target_size,
+        batch_size=batch_size,
+        class_mode=class_mode
+    )
+    return generator
+
+def visualizar_imagenes(generator, num_imagenes=5):
+    from tensorflow.keras.preprocessing import image
+    import matplotlib.pyplot as plt
+    
+    for _ in range(num_imagenes):
+        img, label = generator.next()
+        img = img[0]
+        plt.imshow(img)
+        plt.title(f"Clase: {label}")
+        plt.show()
+
+
+def tokenizar_texto(texts, max_words=10000, max_length=100, oov_token="<OOV>", padding='post', truncating='post'):
+    """
+    Tokeniza y preprocesa un conjunto de textos.
+
+    Parámetros:
+    - texts: Lista de textos a tokenizar.
+    - max_words: Número máximo de palabras a considerar en el vocabulario.
+    - max_length: Longitud máxima de las secuencias.
+    - oov_token: Token para palabras fuera del vocabulario.
+    - padding: Estrategia de padding ('pre' o 'post').
+    - truncating: Estrategia de truncamiento ('pre' o 'post').
+
+    Retorna:
+    - padded_sequences: Secuencias tokenizadas y rellenadas.
+    - word_index: Diccionario de índices de palabras.
+    """
+    tokenizer = Tokenizer(num_words=max_words, oov_token=oov_token)
+    tokenizer.fit_on_texts(texts)
+    sequences = tokenizer.texts_to_sequences(texts)
+    padded_sequences = pad_sequences(sequences, maxlen=max_length, padding=padding, truncating=truncating)
+    return padded_sequences, tokenizer.word_index
+
+
+def visualizar_texto(texts, labels, num_samples=5, plot_word_cloud=False):
+    """
+    Visualiza muestras de textos y sus etiquetas.
+
+    Parámetros:
+    - texts: Lista de textos.
+    - labels: Lista de etiquetas correspondientes a los textos.
+    - num_samples: Número de muestras a visualizar.
+    - plot_word_cloud: Si es True, genera una nube de palabras.
+    """
+    for i in range(num_samples):
+        print(f"Texto: {texts[i]}")
+        print(f"Etiqueta: {labels[i]}")
+        print("-" * 50)
+    
+    if plot_word_cloud:
+        from wordcloud import WordCloud
+        all_text = ' '.join(texts)
+        wordcloud = WordCloud(width=800, height=400, background_color='white').generate(all_text)
+        plt.figure(figsize=(10, 5))
+        plt.imshow(wordcloud, interpolation='bilinear')
+        plt.axis('off')
+        plt.title('Nube de Palabras')
+        plt.show()
+    
+    # Visualizar distribución de etiquetas
+    sns.countplot(labels)
+    plt.title('Distribución de Etiquetas')
+    plt.xlabel('Etiquetas')
+    plt.ylabel('Frecuencia')
+    plt.show()    
