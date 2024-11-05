@@ -409,15 +409,8 @@ from data_processing import (
     preprocesar_datos
 )
 
-## Módulo de Redes Neuronales
 
-Este módulo proporciona funciones para construir, entrenar, evaluar y visualizar modelos de redes neuronales utilizando `TensorFlow` y `Keras`. Además, incluye funcionalidades para modelos de lenguaje natural (NLP) como GPT-2, GPT-3, y otros modelos basados en `transformers`.
-
-### Instalación
-
-Asegúrate de tener instaladas las siguientes bibliotecas:
-
-```bash
+```
 pip install -r requirements.txt
 ```
 
