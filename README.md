@@ -409,24 +409,211 @@ from data_processing import (
     preprocesar_datos
 )
 
+## Módulo de Redes Neuronales
+
+Este módulo proporciona funciones para construir, entrenar, evaluar y visualizar modelos de redes neuronales utilizando `TensorFlow` y `Keras`. Además, incluye funcionalidades para modelos de lenguaje natural (NLP) como GPT-2, GPT-3, y otros modelos basados en `transformers`.
+
+### Instalación
+
+Asegúrate de tener instaladas las siguientes bibliotecas:
+
+```bash
+pip install -r requirements.txt
+```
+
+### Uso
+
+#### Preprocesamiento de Datos
+
+```python
+from data_processing import neural_networks
+
+# Preprocesar datos para redes neuronales
+X_train, X_test, y_train, y_test = neural_networks.preprocesar_datos(X, y)
+```
+
+#### Preprocesamiento de Datos para NLP
+
+```python
+# Preprocesar datos para NLP
+X_train, X_test, y_train, y_test, word_index = neural_networks.preprocesar_nlp(texts, labels)
+```
+
+#### Preprocesamiento de Datos para GPT-2 y GPT-3
+
+```python
+# Preprocesar datos para GPT-2 y GPT-3
+inputs = neural_networks.preprocesar_gpt(texts)
+```
+
+#### Construir y Compilar el Modelo
+
+```python
+# Construir el modelo
+model = neural_networks.construir_modelo(input_dim=X_train.shape[1], output_dim=len(y.unique()))
+
+# Compilar el modelo
+model = neural_networks.compilar_modelo(model)
+```
+
+#### Entrenar el Modelo
+
+```python
+# Callbacks para el entrenamiento
+callbacks_list = neural_networks.callbacks()
+
+# Entrenar el modelo
+history = neural_networks.entrenar_modelo(model, X_train, y_train, callbacks=callbacks_list)
+```
+
+#### Visualizar Métricas de Entrenamiento
+
+```python
+# Visualizar métricas de entrenamiento
+neural_networks.visualizar_metricas(history)
+```
+
+#### Evaluar el Modelo
+
+```python
+# Evaluar el modelo
+loss, accuracy = neural_networks.evaluar_modelo(model, X_test, y_test)
+```
+
+#### Guardar y Cargar el Modelo
+
+```python
+# Guardar el modelo
+neural_networks.guardar_modelo(model, 'modelo.h5')
+
+# Cargar el modelo
+model = neural_networks.cargar_modelo('modelo.h5')
+```
+
+#### Predecir con el Modelo
+
+```python
+# Predecir con el modelo
+predictions = neural_networks.predecir(model, X_test)
+```
+
+### Ejemplo Completo
+
+```python
+from data_processing import data_processing, neural_networks
+
 # Cargar y preprocesar datos
-df = cargar_datos('datos.csv')
-df = eliminar_nulos(df)
+df = data_processing.cargar_datos('datos.csv')
+df = data_processing.eliminar_nulos(df)
+df = data_processing.eliminar_duplicados(df)
 
 # Preprocesar datos para redes neuronales
 X = df.drop('target', axis=1)
 y = df['target']
-X_train, X_test, y_train, y_test = preprocesar_datos(X, y)
+X_train, X_test, y_train, y_test = neural_networks.preprocesar_datos(X, y)
 
 # Construir y compilar el modelo
-model = construir_modelo(input_dim=X_train.shape[1], output_dim=len(y.unique()))
-model = compilar_modelo(model)
+model = neural_networks.construir_modelo(input_dim=X_train.shape[1], output_dim=len(y.unique()))
+model = neural_networks.compilar_modelo(model)
+
+# Callbacks para el entrenamiento
+callbacks_list = neural_networks.callbacks()
 
 # Entrenar el modelo
-history = entrenar_modelo(model, X_train, y_train)
+history = neural_networks.entrenar_modelo(model, X_train, y_train, callbacks=callbacks_list)
+
+# Visualizar métricas de entrenamiento
+neural_networks.visualizar_metricas(history)
 
 # Evaluar el modelo
-loss, accuracy = evaluar_modelo(model, X_test, y_test)
+loss, accuracy = neural_networks.evaluar_modelo(model, X_test, y_test)
+
+# Guardar el modelo
+neural_networks.guardar_modelo(model, 'modelo.h5')
+
+# Cargar el modelo
+model = neural_networks.cargar_modelo('modelo.h5')
+
+# Predecir con el modelo
+predictions = neural_networks.predecir(model, X_test)
+```
+
+### Ejemplo de Uso para NLP
+
+```python
+from data_processing import data_processing, neural_networks
+
+# Cargar y preprocesar datos
+texts = ["ejemplo de texto 1", "ejemplo de texto 2", "ejemplo de texto 3"]
+labels = [0, 1, 0]
+
+# Preprocesar datos para NLP
+X_train, X_test, y_train, y_test, word_index = neural_networks.preprocesar_nlp(texts, labels)
+
+# Construir y compilar el modelo
+model = neural_networks.construir_modelo(input_dim=(X_train.shape[1],), output_dim=len(np.unique(labels)), model_type='nlp', nlp_vocab_size=len(word_index) + 1, nlp_max_length=X_train.shape[1])
+model = neural_networks.compilar_modelo(model)
+
+# Callbacks para el entrenamiento
+callbacks_list = neural_networks.callbacks()
+
+# Entrenar el modelo
+history = neural_networks.entrenar_modelo(model, X_train, y_train, callbacks=callbacks_list)
+
+# Visualizar métricas de entrenamiento
+neural_networks.visualizar_metricas(history)
+
+# Evaluar el modelo
+loss, accuracy = neural_networks.evaluar_modelo(model, X_test, y_test)
+
+# Guardar el modelo
+neural_networks.guardar_modelo(model, 'modelo_nlp.h5')
+
+# Cargar el modelo
+model = neural_networks.cargar_modelo('modelo_nlp.h5')
+
+# Predecir con el modelo
+predictions = neural_networks.predecir(model, X_test)
+```
+
+### Ejemplo de Uso para GPT-2
+
+```python
+from data_processing import data_processing, neural_networks
+
+# Cargar y preprocesar datos
+texts = ["ejemplo de texto 1", "ejemplo de texto 2", "ejemplo de texto 3"]
+labels = [0, 1, 0]
+
+# Preprocesar datos para GPT-2
+inputs = neural_networks.preprocesar_gpt(texts)
+
+# Construir el modelo GPT-2
+model = neural_networks.construir_gpt2(output_dim=len(np.unique(labels)))
+
+# Compilar el modelo
+model = neural_networks.compilar_modelo(model)
+
+# Callbacks para el entrenamiento
+callbacks_list = neural_networks.callbacks()
+
+# Entrenar el modelo
+history = neural_networks.entrenar_modelo(model, inputs['input_ids'], labels, callbacks=callbacks_list)
+
+# Visualizar métricas de entrenamiento
+neural_networks.visualizar_metricas(history)
+
+# Evaluar el modelo
+loss, accuracy = neural_networks.evaluar_modelo(model, inputs['input_ids'], labels)
+
+# Guardar el modelo
+neural_networks.guardar_modelo(model, 'modelo_gpt2.h5')
+
+# Cargar el modelo
+model = neural_networks.cargar_modelo('modelo_gpt2.h5')
+
+# Predecir con el modelo
+predictions = neural_networks.predecir(model, inputs['input_ids'])
 ```
 
 ## Contribuciones
